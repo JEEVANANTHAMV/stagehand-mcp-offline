@@ -14,6 +14,7 @@ export type CLIOptions = {
   browserHeight?: number;
   modelName?: string;
   modelApiKey?: string;
+  modelBaseURL?: string;
   keepAlive?: boolean;
   experimental?: boolean;
 };
@@ -36,6 +37,7 @@ const defaultConfig: Config = {
     browserHeight: 768,
   },
   modelName: "gemini-2.0-flash", // Default Model
+  modelBaseURL: process.env.MODEL_BASE_URL || process.env.OPENAI_BASE_URL || "",
   // LOCAL mode specific config
   screenshot: {
     enabled: process.env.SCREENSHOT_ENABLED !== "false",
@@ -116,6 +118,7 @@ export async function configFromCLIOptions(
     advancedStealth: cliOptions.advancedStealth,
     modelName: cliOptions.modelName,
     modelApiKey: cliOptions.modelApiKey,
+    modelBaseURL: cliOptions.modelBaseURL,
     keepAlive: cliOptions.keepAlive,
     experimental: cliOptions.experimental,
   };

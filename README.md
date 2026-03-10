@@ -1,9 +1,9 @@
-# Stagehand MCP Server - Local Mode
+# Innosynth MCP Server - Local Mode
 
-[![npm version](https://badge.fury.io/js/stagehand-mcp-local.svg)](https://www.npmjs.com/package/stagehand-mcp-local)
+[![npm version](https://badge.fury.io/js/innosynth-mcp.svg)](https://www.npmjs.com/package/innosynth-mcp)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Run [Stagehand](https://github.com/browserbase/stagehand) browser automation locally without cloud services. A fork of the official [@browserbasehq/mcp-server-browserbase](https://github.com/browserbase/mcp-server-browserbase) with LOCAL mode support.
+Run [Stagehand](https://github.com/browserbase/stagehand) browser automation locally without cloud services. A fork of the official [@browserbasehq/mcp-server-browserbase](https://github.com/browserbase/mcp-server-browserbase) with LOCAL mode support and custom OpenAI endpoint configuration.
 
 ## Why This Fork?
 
@@ -18,6 +18,7 @@ This fork unlocks that capability:
 | Cost | Browserbase subscription | **Free** (bring your own LLM key) |
 | Network requirement | Internet required | Works offline/intranet |
 | Auto screenshots | ❌ | ✅ After each action |
+| Custom LLM endpoints | ❌ | ✅ Ollama, LM Studio, etc. |
 
 ## Use Cases
 
@@ -25,13 +26,14 @@ This fork unlocks that capability:
 - **Self-hosted AI agents** - Run on your own servers
 - **Air-gapped environments** - No external cloud dependency
 - **CI/CD pipelines** - Automated testing without cloud API limits
+- **Custom LLMs** - Use self-hosted models like Ollama or LM Studio
 
 ## Quick Start
 
 ### Using npx (Recommended)
 
 ```bash
-npx stagehand-mcp-local
+npx innosynth-mcp
 ```
 
 ### Add to Claude Code
@@ -40,7 +42,7 @@ npx stagehand-mcp-local
 claude mcp add stagehand-local \
   -e STAGEHAND_ENV=LOCAL \
   -e OPENAI_API_KEY=your_key \
-  -- npx stagehand-mcp-local
+  -- npx innosynth-mcp
 ```
 
 ### Add to Cursor / VS Code
@@ -52,7 +54,7 @@ Add to your MCP configuration:
   "mcpServers": {
     "stagehand-local": {
       "command": "npx",
-      "args": ["stagehand-mcp-local"],
+      "args": ["innosynth-mcp"],
       "env": {
         "STAGEHAND_ENV": "LOCAL",
         "OPENAI_API_KEY": "your_openai_key"
@@ -67,14 +69,14 @@ Add to your MCP configuration:
 ### npm (Global)
 
 ```bash
-npm install -g stagehand-mcp-local
+npm install -g innosynth-mcp
 ```
 
 ### From Source
 
 ```bash
-git clone https://github.com/weijiafu14/stagehand-mcp-local.git
-cd stagehand-mcp-local
+git clone https://github.com/innosynth/innosynth-mcp.git
+cd innosynth-mcp
 pnpm install
 pnpm build
 ```
@@ -89,6 +91,7 @@ pnpm build
 | `OPENAI_API_KEY` | OpenAI API key | - | One of these |
 | `GEMINI_API_KEY` | Google Gemini API key | - | is required |
 | `ANTHROPIC_API_KEY` | Anthropic API key | - | for Stagehand |
+| `MODEL_BASE_URL` | Base URL for custom OpenAI-compatible endpoints (e.g., Ollama, LM Studio) | - | No |
 | `HEADLESS` | Run browser headless | `true` | No |
 | `SCREENSHOT_ENABLED` | Enable auto screenshots | `true` | No |
 | `SCREENSHOT_DIR` | Screenshot save directory | `/tmp/stagehand-screenshots` | No |
@@ -98,7 +101,7 @@ pnpm build
 All original Browserbase MCP server options are supported:
 
 ```bash
-npx stagehand-mcp-local --browserWidth 1920 --browserHeight 1080 --experimental
+npx innosynth-mcp --browserWidth 1920 --browserHeight 1080 --experimental
 ```
 
 | Flag | Description |
@@ -107,6 +110,50 @@ npx stagehand-mcp-local --browserWidth 1920 --browserHeight 1080 --experimental
 | `--browserHeight <height>` | Browser viewport height (default: 768) |
 | `--modelName <model>` | LLM model for Stagehand (default: gemini-2.0-flash) |
 | `--experimental` | Enable experimental Stagehand features |
+
+## Custom Model Endpoints
+
+You can use self-hosted LLMs or OpenAI-compatible APIs by setting the `MODEL_BASE_URL` environment variable:
+
+### Ollama Example
+
+```bash
+claude mcp add stagehand-local \
+  -e STAGEHAND_ENV=LOCAL \
+  -e MODEL_BASE_URL=http://localhost:11434/v1 \
+  -e OPENAI_API_KEY=ollama \
+  -e modelName=llama3.2 \
+  -- npx innosynth-mcp
+```
+
+### LM Studio Example
+
+```json
+{
+  "mcpServers": {
+    "stagehand-local": {
+      "command": "npx",
+      "args": ["innosynth-mcp"],
+      "env": {
+        "STAGEHAND_ENV": "LOCAL",
+        "MODEL_BASE_URL": "http://localhost:1234/v1",
+        "OPENAI_API_KEY": "any-key",
+        "modelName": "your-model-name"
+      }
+    }
+  }
+}
+```
+
+### Generic OpenAI-Compatible API
+
+```bash
+export STAGEHAND_ENV=LOCAL
+export MODEL_BASE_URL=https://api.your-custom-llm.com/v1
+export OPENAI_API_KEY=your_api_key
+export modelName=gpt-4o-mini
+npx innosynth-mcp
+```
 
 ## Available MCP Tools
 
@@ -219,4 +266,4 @@ Built with:
 Apache-2.0 - See [LICENSE](./LICENSE) for details.
 
 **Original work**: Copyright 2025 Browserbase, Inc.
-**Modifications**: Copyright 2025 weijiafu14
+**Modifications**: Copyright 2025 innosynth

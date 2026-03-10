@@ -30,6 +30,7 @@ export const createStagehandInstance = async (
     process.env.GOOGLE_API_KEY ||
     process.env.OPENAI_API_KEY ||
     process.env.ANTHROPIC_API_KEY;
+  const modelBaseURL = config.modelBaseURL || process.env.MODEL_BASE_URL || process.env.OPENAI_BASE_URL || "";
 
   let stagehand: Stagehand;
 
@@ -37,14 +38,18 @@ export const createStagehandInstance = async (
     // LOCAL mode - run browser locally
     process.stderr.write(`[SessionManager] Creating LOCAL Stagehand instance for session ${sessionId}\n`);
 
+    // Build model config object
+    const modelConfig = modelApiKey
+      ? {
+          apiKey: modelApiKey,
+          modelName: modelName,
+          ...(modelBaseURL && { baseURL: modelBaseURL }),
+        }
+      : modelName;
+
     stagehand = new Stagehand({
       env: "LOCAL",
-      model: modelApiKey
-        ? {
-            apiKey: modelApiKey,
-            modelName: modelName,
-          }
-        : modelName,
+      model: modelConfig,
       experimental: config.experimental ?? false,
       localBrowserLaunchOptions: {
         headless: config.localBrowserLaunchOptions?.headless ?? true,
@@ -61,16 +66,19 @@ export const createStagehandInstance = async (
     });
   } else {
     // BROWSERBASE mode - use cloud browser
+    const modelConfig = modelApiKey
+      ? {
+          apiKey: modelApiKey,
+          modelName: modelName,
+          ...(modelBaseURL && { baseURL: modelBaseURL }),
+        }
+      : modelName;
+
     stagehand = new Stagehand({
       env: "BROWSERBASE",
       apiKey,
       projectId,
-      model: modelApiKey
-        ? {
-            apiKey: modelApiKey,
-            modelName: modelName,
-          }
-        : modelName,
+      model: modelConfig,
       ...(params.browserbaseSessionID && {
         browserbaseSessionID: params.browserbaseSessionID,
       }),

@@ -1,7 +1,7 @@
 {
-  "name": "stagehand-mcp-local",
+  "name": "innosynth-mcp",
   "version": "1.0.0",
-  "description": "MCP server for AI browser automation using Stagehand - supports LOCAL mode without Browserbase cloud",
+  "description": "MCP server for AI browser automation using Stagehand - supports LOCAL mode without Browserbase cloud. Fork with custom OpenAI endpoint support.",
   "keywords": [
     "mcp",
     "stagehand",
@@ -11,23 +11,24 @@
     "playwright",
     "claude",
     "openai",
-    "local"
+    "local",
+    "innosynth"
   ],
   "license": "Apache-2.0",
-  "author": "weijiafu14",
-  "homepage": "https://github.com/weijiafu14/stagehand-mcp-local",
+  "author": "innosynth",
+  "homepage": "https://github.com/innosynth/innosynth-mcp",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/weijiafu14/stagehand-mcp-local.git"
+    "url": "git+https://github.com/innosynth/innosynth-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/weijiafu14/stagehand-mcp-local/issues"
+    "url": "https://github.com/innosynth/innosynth-mcp/issues"
   },
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "bin": {
-    "stagehand-mcp-local": "./cli.js"
+    "innosynth-mcp": "./cli.js"
   },
   "files": [
     "dist",

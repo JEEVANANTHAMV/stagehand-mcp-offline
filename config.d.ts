@@ -131,6 +131,13 @@ export type Config = {
    */
   modelApiKey?: string;
   /**
+   * Base URL for the model provider (for custom OpenAI-compatible endpoints)
+   * Useful for self-hosted LLMs like Ollama, LM Studio, or OpenAI-compatible APIs
+   * @example "http://localhost:11434/v1" for Ollama
+   * @example "https://api.your-custom-llm.com/v1" for custom endpoints
+   */
+  modelBaseURL?: string;
+  /**
    * Enable experimental features
    *
    * @default false

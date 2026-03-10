@@ -92,6 +92,12 @@ export const configSchema = z
       .describe(
         "API key for the custom model provider. Required when using a model other than the default gemini-2.0-flash",
       ),
+    modelBaseURL: z
+      .string()
+      .optional()
+      .describe(
+        "Base URL for the model provider (for custom OpenAI-compatible endpoints). Useful for self-hosted LLMs like Ollama, LM Studio, or custom APIs. Example: http://localhost:11434/v1",
+      ),
     experimental: z
       .boolean()
       .optional()

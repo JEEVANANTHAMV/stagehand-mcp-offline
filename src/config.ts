@@ -1,4 +1,5 @@
 import type { Config } from "../config.d.ts";
+import * as fs from "fs";
 
 export type ToolCapability = "core" | string;
 
@@ -25,6 +26,51 @@ const isLocalMode = process.env.STAGEHAND_ENV === "LOCAL";
 // Check if CDP endpoint is provided (connect to existing Chrome)
 const cdpEndpoint = process.env.CDP_ENDPOINT || "";
 
+/**
+ * Find the Chrome/Chromium executable path on the current platform.
+ * Returns the first valid path found, or undefined if no browser is found.
+ */
+function findChromePath(): string | undefined {
+  // Check environment variables first
+  const envPath = process.env.CHROME_PATH || process.env.LIGHTHOUSE_CHROMIUM_PATH;
+  if (envPath && fs.existsSync(envPath)) {
+    return envPath;
+  }
+
+  // Platform-specific paths
+  const platformPaths: string[] = [];
+
+  if (process.platform === "linux") {
+    platformPaths.push(
+      "/usr/bin/google-chrome",
+      "/usr/bin/google-chrome-stable",
+      "/usr/bin/chromium-browser",
+      "/usr/bin/chromium",
+      "/snap/bin/chromium",
+      "/snap/bin/google-chrome",
+    );
+  } else if (process.platform === "darwin") {
+    platformPaths.push(
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",
+    );
+  } else if (process.platform === "win32") {
+    platformPaths.push(
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+    );
+  }
+
+  // Return the first existing path
+  for (const path of platformPaths) {
+    if (fs.existsSync(path)) {
+      return path;
+    }
+  }
+
+  return undefined;
+}
+
 // Default Configuration Values
 const defaultConfig: Config = {
   env: isLocalMode ? "LOCAL" : "BROWSERBASE",
@@ -49,6 +95,7 @@ const defaultConfig: Config = {
   },
   localBrowserLaunchOptions: {
     headless: process.env.HEADLESS !== "false",
+    executablePath: findChromePath(),
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
   },
   cdpEndpoint: cdpEndpoint,

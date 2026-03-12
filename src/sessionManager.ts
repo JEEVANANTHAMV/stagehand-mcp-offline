@@ -60,7 +60,40 @@ export const createStagehandInstance = async (
     if (cdpEndpoint) {
       // CDP mode - connect to existing Chrome browser
       process.stderr.write(`[SessionManager] Connecting to CDP endpoint: ${cdpEndpoint}\n`);
-      launchOptions.cdpUrl = cdpEndpoint;
+
+      // If CDP endpoint is an HTTP URL, resolve it to the WebSocket debugger URL
+      let cdpUrl = cdpEndpoint;
+      if (cdpEndpoint.startsWith("http://") || cdpEndpoint.startsWith("https://")) {
+        try {
+          const url = new URL(cdpEndpoint);
+          const versionUrl = `${url.protocol}//${url.host}/json/version`;
+          const response = await fetch(versionUrl);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.webSocketDebuggerUrl) {
+              cdpUrl = data.webSocketDebuggerUrl;
+              process.stderr.write(
+                `[SessionManager] Resolved WebSocket URL: ${cdpUrl}\n`,
+              );
+            } else {
+              throw new Error(
+                "No webSocketDebuggerUrl found in CDP /json/version response",
+              );
+            }
+          } else {
+            throw new Error(
+              `Failed to fetch CDP version: ${response.status} ${response.statusText}`,
+            );
+          }
+        } catch (error) {
+          process.stderr.write(
+            `[SessionManager] WARN - Failed to resolve WebSocket URL: ${error instanceof Error ? error.message : String(error)}. Using provided URL as-is.\n`,
+          );
+          // Fall back to converting http to ws protocol
+          cdpUrl = cdpEndpoint.replace(/^https?:/, "ws:");
+        }
+      }
+      launchOptions.cdpUrl = cdpUrl;
     } else {
       // Launch new local browser
       launchOptions.headless = config.localBrowserLaunchOptions?.headless ?? true;

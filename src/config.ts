@@ -22,6 +22,9 @@ export type CLIOptions = {
 // Check if LOCAL mode is enabled
 const isLocalMode = process.env.STAGEHAND_ENV === "LOCAL";
 
+// Check if CDP endpoint is provided (connect to existing Chrome)
+const cdpEndpoint = process.env.CDP_ENDPOINT || "";
+
 // Default Configuration Values
 const defaultConfig: Config = {
   env: isLocalMode ? "LOCAL" : "BROWSERBASE",
@@ -48,6 +51,7 @@ const defaultConfig: Config = {
     headless: process.env.HEADLESS !== "false",
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
   },
+  cdpEndpoint: cdpEndpoint,
 };
 
 // Resolve final configuration by merging defaults, file config, and CLI options

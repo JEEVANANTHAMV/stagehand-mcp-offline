@@ -41,57 +41,54 @@ export const createStagehandInstance = async (
     // Build model config object
     const modelConfig = modelApiKey
       ? {
-          apiKey: modelApiKey,
-          modelName: modelName,
-          ...(modelBaseURL && { baseURL: modelBaseURL }),
-        }
+        apiKey: modelApiKey,
+        modelName: modelName,
+        ...(modelBaseURL && { baseURL: modelBaseURL }),
+      }
       : modelName;
 
     // Check if CDP endpoint is provided (connect to existing Chrome)
     const cdpEndpoint = config.cdpEndpoint;
-    
+
+    const launchOptions: {
+      headless?: boolean;
+      executablePath?: string;
+      args?: string[];
+      cdpUrl?: string;
+    } = {};
+
     if (cdpEndpoint) {
       // CDP mode - connect to existing Chrome browser
       process.stderr.write(`[SessionManager] Connecting to CDP endpoint: ${cdpEndpoint}\n`);
-      stagehand = new Stagehand({
-        env: "LOCAL",
-        model: modelConfig,
-        experimental: config.experimental ?? false,
-        connectOptions: {
-          browserURL: cdpEndpoint,
-        },
-        logger: (logLine) => {
-          console.error(`Stagehand[CDP][${sessionId}]: ${logLine.message}`);
-        },
-      });
+      launchOptions.cdpUrl = cdpEndpoint;
     } else {
       // Launch new local browser
-      stagehand = new Stagehand({
-        env: "LOCAL",
-        model: modelConfig,
-        experimental: config.experimental ?? false,
-        localBrowserLaunchOptions: {
-          headless: config.localBrowserLaunchOptions?.headless ?? true,
-          executablePath: config.localBrowserLaunchOptions?.executablePath,
-          args: config.localBrowserLaunchOptions?.args ?? [
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage",
-          ],
-        },
-        logger: (logLine) => {
-          console.error(`Stagehand[LOCAL][${sessionId}]: ${logLine.message}`);
-        },
-      });
+      launchOptions.headless = config.localBrowserLaunchOptions?.headless ?? true;
+      launchOptions.executablePath = config.localBrowserLaunchOptions?.executablePath;
+      launchOptions.args = config.localBrowserLaunchOptions?.args ?? [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ];
     }
+
+    stagehand = new Stagehand({
+      env: "LOCAL",
+      model: modelConfig,
+      experimental: config.experimental ?? false,
+      localBrowserLaunchOptions: launchOptions,
+      logger: (logLine) => {
+        console.error(`Stagehand[LOCAL][${sessionId}]: ${logLine.message}`);
+      },
+    });
   } else {
     // BROWSERBASE mode - use cloud browser
     const modelConfig = modelApiKey
       ? {
-          apiKey: modelApiKey,
-          modelName: modelName,
-          ...(modelBaseURL && { baseURL: modelBaseURL }),
-        }
+        apiKey: modelApiKey,
+        modelName: modelName,
+        ...(modelBaseURL && { baseURL: modelBaseURL }),
+      }
       : modelName;
 
     stagehand = new Stagehand({
@@ -114,9 +111,9 @@ export const createStagehandInstance = async (
           },
           context: config.context?.contextId
             ? {
-                id: config.context?.contextId,
-                persist: config.context?.persist ?? true,
-              }
+              id: config.context?.contextId,
+              persist: config.context?.persist ?? true,
+            }
             : undefined,
           advancedStealth: config.advancedStealth ?? undefined,
         },
@@ -324,17 +321,15 @@ export class SessionManager {
             clearScreenshotsForSession(sessionIdToLog);
           } catch (err) {
             process.stderr.write(
-              `[SessionManager] WARN - Failed to clear screenshots after close for ${sessionIdToLog}: ${
-                err instanceof Error ? err.message : String(err)
+              `[SessionManager] WARN - Failed to clear screenshots after close for ${sessionIdToLog}: ${err instanceof Error ? err.message : String(err)
               }\n`,
             );
           }
         } catch (closeError) {
           process.stderr.write(
-            `[SessionManager] WARN - Error closing Stagehand for session ${sessionIdToLog}: ${
-              closeError instanceof Error
-                ? closeError.message
-                : String(closeError)
+            `[SessionManager] WARN - Error closing Stagehand for session ${sessionIdToLog}: ${closeError instanceof Error
+              ? closeError.message
+              : String(closeError)
             }\n`,
           );
         }
@@ -397,10 +392,9 @@ export class SessionManager {
         } catch (creationError) {
           // Error during initial creation or recreation
           process.stderr.write(
-            `[SessionManager] Initial/Recreation attempt for default session ${sessionId} failed. Error: ${
-              creationError instanceof Error
-                ? creationError.message
-                : String(creationError)
+            `[SessionManager] Initial/Recreation attempt for default session ${sessionId} failed. Error: ${creationError instanceof Error
+              ? creationError.message
+              : String(creationError)
             }\n`,
           );
           // Attempt one more time after a failure

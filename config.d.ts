@@ -42,6 +42,12 @@ export type Config = {
     args?: string[];
   };
   /**
+   * CDP connection options for connecting to an existing Chrome browser
+   * When specified, Stagehand will connect to an existing browser instead of launching a new one
+   * (only for LOCAL mode with CDP endpoint)
+   */
+  cdpEndpoint?: string;
+  /**
    * Whether or not to use Browserbase proxies
    * https://docs.browserbase.com/features/proxies
    *

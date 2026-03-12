@@ -47,23 +47,43 @@ export const createStagehandInstance = async (
         }
       : modelName;
 
-    stagehand = new Stagehand({
-      env: "LOCAL",
-      model: modelConfig,
-      experimental: config.experimental ?? false,
-      localBrowserLaunchOptions: {
-        headless: config.localBrowserLaunchOptions?.headless ?? true,
-        executablePath: config.localBrowserLaunchOptions?.executablePath,
-        args: config.localBrowserLaunchOptions?.args ?? [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage",
-        ],
-      },
-      logger: (logLine) => {
-        console.error(`Stagehand[LOCAL][${sessionId}]: ${logLine.message}`);
-      },
-    });
+    // Check if CDP endpoint is provided (connect to existing Chrome)
+    const cdpEndpoint = config.cdpEndpoint;
+    
+    if (cdpEndpoint) {
+      // CDP mode - connect to existing Chrome browser
+      process.stderr.write(`[SessionManager] Connecting to CDP endpoint: ${cdpEndpoint}\n`);
+      stagehand = new Stagehand({
+        env: "LOCAL",
+        model: modelConfig,
+        experimental: config.experimental ?? false,
+        connectOptions: {
+          browserURL: cdpEndpoint,
+        },
+        logger: (logLine) => {
+          console.error(`Stagehand[CDP][${sessionId}]: ${logLine.message}`);
+        },
+      });
+    } else {
+      // Launch new local browser
+      stagehand = new Stagehand({
+        env: "LOCAL",
+        model: modelConfig,
+        experimental: config.experimental ?? false,
+        localBrowserLaunchOptions: {
+          headless: config.localBrowserLaunchOptions?.headless ?? true,
+          executablePath: config.localBrowserLaunchOptions?.executablePath,
+          args: config.localBrowserLaunchOptions?.args ?? [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+          ],
+        },
+        logger: (logLine) => {
+          console.error(`Stagehand[LOCAL][${sessionId}]: ${logLine.message}`);
+        },
+      });
+    }
   } else {
     // BROWSERBASE mode - use cloud browser
     const modelConfig = modelApiKey

@@ -19,6 +19,7 @@ This fork unlocks that capability:
 | Network requirement | Internet required | Works offline/intranet |
 | Auto screenshots | ❌ | ✅ After each action |
 | Custom LLM endpoints | ❌ | ✅ Ollama, LM Studio, etc. |
+| CDP connection | ❌ | ✅ Connect to existing Chrome |
 
 ## Use Cases
 
@@ -95,6 +96,7 @@ pnpm build
 | `HEADLESS` | Run browser headless | `true` | No |
 | `SCREENSHOT_ENABLED` | Enable auto screenshots | `true` | No |
 | `SCREENSHOT_DIR` | Screenshot save directory | `/tmp/stagehand-screenshots` | No |
+| `CDP_ENDPOINT` | Chrome DevTools Protocol endpoint to connect to existing Chrome browser | - | No |
 
 ### CLI Options
 
@@ -154,6 +156,85 @@ export OPENAI_API_KEY=your_api_key
 export modelName=gpt-4o-mini
 npx innosynth-mcp
 ```
+
+## CDP Connection Mode
+
+You can connect to an **existing Chrome browser** via Chrome DevTools Protocol (CDP) instead of launching a new browser. This is useful when you want to control a manually opened Chrome browser or a browser managed by another tool.
+
+### How to Enable CDP on Chrome
+
+1. Open Chrome with remote debugging enabled:
+
+   **Linux:**
+   ```bash
+   google-chrome --remote-debugging-port=9222
+   ```
+
+   **macOS:**
+   ```bash
+   /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
+   ```
+
+   **Windows:**
+   ```bash
+   "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222
+   ```
+
+2. Note the CDP endpoint URL (typically `http://localhost:9222`)
+
+3. Configure the MCP server with the `CDP_ENDPOINT` environment variable:
+
+   ```bash
+   export STAGEHAND_ENV=LOCAL
+   export CDP_ENDPOINT=http://localhost:9222
+   export GEMINI_API_KEY=your_api_key
+   npx innosynth-mcp
+   ```
+
+### CDP in Claude Code
+
+```bash
+claude mcp add stagehand-local \
+  -e STAGEHAND_ENV=LOCAL \
+  -e CDP_ENDPOINT=http://localhost:9222 \
+  -e GEMINI_API_KEY=your_key \
+  -- npx innosynth-mcp
+```
+
+### CDP in Cursor / VS Code
+
+```json
+{
+  "mcpServers": {
+    "stagehand-local": {
+      "command": "npx",
+      "args": ["innosynth-mcp"],
+      "env": {
+        "STAGEHAND_ENV": "LOCAL",
+        "CDP_ENDPOINT": "http://localhost:9222",
+        "GEMINI_API_KEY": "your_gemini_key"
+      }
+    }
+  }
+}
+```
+
+### CDP Endpoint Format
+
+The `CDP_ENDPOINT` should be the Chrome DevTools Protocol debugging URL:
+- Format: `http://<host>:<port>`
+- Default port: `9222`
+- Examples:
+  - `http://localhost:9222` - Local Chrome
+  - `http://127.0.0.1:9222` - Local Chrome (IPv4)
+  - `http://docker-host:9222` - Chrome in Docker container
+
+### Notes
+
+- When `CDP_ENDPOINT` is set, the MCP server will **connect** to the existing browser instead of launching a new one
+- The Chrome browser must be started with `--remote-debugging-port` flag
+- Multiple tabs/windows in the Chrome browser will be accessible
+- The browser must remain running for the MCP server to function
 
 ## Available MCP Tools
 

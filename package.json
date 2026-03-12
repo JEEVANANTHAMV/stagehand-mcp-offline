@@ -1,6 +1,6 @@
 {
   "name": "innosynth-mcp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "MCP server for AI browser automation using Stagehand - supports LOCAL mode without Browserbase cloud. Fork with custom OpenAI endpoint support.",
   "keywords": [
     "mcp",

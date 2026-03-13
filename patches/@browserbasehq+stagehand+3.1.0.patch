@@ -1,0 +1,12 @@
+diff --git a/node_modules/@browserbasehq/stagehand/dist/esm/lib/v3/llm/LLMProvider.js b/node_modules/@browserbasehq/stagehand/dist/esm/lib/v3/llm/LLMProvider.js
+index 00fd623..ef89ef0 100644
+--- a/node_modules/@browserbasehq/stagehand/dist/esm/lib/v3/llm/LLMProvider.js
++++ b/node_modules/@browserbasehq/stagehand/dist/esm/lib/v3/llm/LLMProvider.js
+@@ -87,6 +87,7 @@ const modelToProviderMap = {
+     "gemini-2.0-flash": "google",
+     "gemini-2.5-flash-preview-04-17": "google",
+     "gemini-2.5-pro-preview-03-25": "google",
++    "qwen3-max": "openai",
+ };
+ export function getAISDKLanguageModel(subProvider, subModelName, clientOptions) {
+     const hasValidOptions = clientOptions &&

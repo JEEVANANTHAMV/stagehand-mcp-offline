@@ -62,6 +62,7 @@ async function handleAct(
         ],
       };
     } catch (error) {
+      console.error("[ActTool Error]", error);
       const errorMsg = error instanceof Error ? error.message : String(error);
       throw new Error(`Failed to perform action: ${errorMsg}`);
     }

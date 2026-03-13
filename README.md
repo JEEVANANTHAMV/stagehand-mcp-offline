@@ -38,7 +38,7 @@ The MCP server can be started in several ways:
 #### Using npx (Recommended)
 
 ```bash
-npx innosynth-mcp
+STAGEHAND_ENV=LOCAL MODEL_NAME=qwen3-max MODEL_BASE_URL=http://localhost:8001/v1 OPENAI_API_KEY=any-key npx innosynth-mcp --experimental --port 3000 --host 0.0.0.0
 ```
 
 #### Using npm (Global Installation)
@@ -64,28 +64,25 @@ pnpm build
 node dist/program.js --port 3001
 ```
 
-#### With Custom Model Endpoint
+#### With Custom Model Endpoint (vLLM / Ollama)
 
 ```bash
-export NVM_DIR="/home/desktopuser/.nvm" && . "$NVM_DIR/nvm.sh" && \
 STAGEHAND_ENV=LOCAL \
-HEADLESS=false \
-MODEL_NAME=openai/qwen3-max \
+MODEL_NAME=qwen3-max \
 MODEL_BASE_URL=http://localhost:8001/v1 \
-OPENAI_API_KEY=test \
-node stagehand-mcp-offline/dist/program.js --port 3001 --experimental
+OPENAI_API_KEY=any-key \
+npx innosynth-mcp --experimental
 ```
 
-#### In Background (Production)
+#### Persistent Setup (Claude Account)
 
 ```bash
-export NVM_DIR="/home/desktopuser/.nvm" && . "$NVM_DIR/nvm.sh" && \
-STAGEHAND_ENV=LOCAL \
-HEADLESS=false \
-MODEL_NAME=openai/qwen3-max \
-MODEL_BASE_URL=http://localhost:8001/v1 \
-OPENAI_API_KEY=test \
-node /home/desktopuser/Downloads/stagehand-mcp-offline/dist/program.js --port 3001 --experimental > /tmp/mcp.log 2>&1 &
+claude mcp add innosynth-mcp \
+  -e STAGEHAND_ENV=LOCAL \
+  -e MODEL_NAME=qwen3-max \
+  -e MODEL_BASE_URL=http://localhost:8001/v1 \
+  -e OPENAI_API_KEY=any-key \
+  -- npx innosynth-mcp --experimental
 ```
 
 ### Add to Claude Code

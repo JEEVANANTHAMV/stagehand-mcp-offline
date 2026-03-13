@@ -31,10 +31,70 @@ This fork unlocks that capability:
 
 ## Quick Start
 
-### Using npx (Recommended)
+### Starting the Server
+
+The MCP server can be started in several ways:
+
+#### Using npx (Recommended)
 
 ```bash
 npx innosynth-mcp
+```
+
+#### Using npm (Global Installation)
+
+```bash
+# Install globally
+npm install -g innosynth-mcp
+
+# Start the server
+innosynth-mcp
+```
+
+#### From Source (Development)
+
+```bash
+# Clone and build
+git clone https://github.com/innosynth/innosynth-mcp.git
+cd innosynth-mcp
+pnpm install
+pnpm build
+
+# Start the server
+node dist/program.js --port 3001
+```
+
+#### With Custom Model Endpoint
+
+```bash
+export NVM_DIR="/home/desktopuser/.nvm" && . "$NVM_DIR/nvm.sh" && \
+STAGEHAND_ENV=LOCAL \
+HEADLESS=false \
+MODEL_NAME=openai/qwen3-max \
+MODEL_BASE_URL=http://101.53.140.44:8001/v1 \
+OPENAI_API_KEY=test \
+node /home/desktopuser/Downloads/stagehand-mcp-offline/dist/program.js --port 3001 --experimental
+```
+
+#### In Background (Production)
+
+```bash
+export NVM_DIR="/home/desktopuser/.nvm" && . "$NVM_DIR/nvm.sh" && \
+STAGEHAND_ENV=LOCAL \
+HEADLESS=false \
+MODEL_NAME=openai/qwen3-max \
+MODEL_BASE_URL=http://101.53.140.44:8001/v1 \
+OPENAI_API_KEY=test \
+node /home/desktopuser/Downloads/stagehand-mcp-offline/dist/program.js --port 3001 --experimental > /tmp/mcp.log 2>&1 &
+```
+
+### Add to Claude Code
+
+```bash
+claude mcp add stagehand-local \
+  -e STAGEHAND_ENV=LOCAL \
+  -e OPENAI_API_KEY=your_key \
+  -- npx innosynth-mcp
 ```
 
 ### Add to Claude Code

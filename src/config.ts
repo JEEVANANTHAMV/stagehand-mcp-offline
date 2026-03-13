@@ -85,7 +85,7 @@ const defaultConfig: Config = {
     browserWidth: 1024,
     browserHeight: 768,
   },
-  modelName: "gemini-2.0-flash", // Default Model
+  modelName: process.env.MODEL_NAME || "gemini-2.0-flash", // Default Model
   modelBaseURL: process.env.MODEL_BASE_URL || process.env.OPENAI_BASE_URL || "",
   // LOCAL mode specific config
   screenshot: {

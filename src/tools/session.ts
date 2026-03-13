@@ -76,16 +76,32 @@ async function handleCreateSession(
 
       // Note: No need to set context.currentSessionId - SessionManager handles this
       // and context.currentSessionId is a getter that delegates to SessionManager
-      const bb = new Browserbase({
-        apiKey: config.browserbaseApiKey,
-      });
-
+      
+      // In LOCAL mode, browserbaseSessionId is not available
+      const isLocalMode = config.env === "LOCAL";
       const browserbaseSessionId = session.stagehand.browserbaseSessionId;
+      
+      if (isLocalMode) {
+        // Return LOCAL mode success message
+        return {
+          content: [
+            {
+              type: "text",
+              text: `LOCAL browser session created successfully. Session ID: ${session.sessionId}`,
+            },
+          ],
+        };
+      }
+      
+      // BROWSERBASE mode - return debug URLs
       if (!browserbaseSessionId) {
         throw new Error(
           "Browserbase session ID not found in Stagehand instance",
         );
       }
+      const bb = new Browserbase({
+        apiKey: config.browserbaseApiKey,
+      });
       const debugUrl = (await bb.sessions.debug(browserbaseSessionId))
         .debuggerFullscreenUrl;
 

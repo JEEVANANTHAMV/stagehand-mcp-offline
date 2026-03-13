@@ -38,16 +38,19 @@ export const createStagehandInstance = async (
     // LOCAL mode - run browser locally
     process.stderr.write(`[SessionManager] Creating LOCAL Stagehand instance for session ${sessionId}\n`);
 
-    // Build model config object
     const modelConfig = modelApiKey
       ? {
-        apiKey: modelApiKey,
-        modelName: modelName,
-        ...(modelBaseURL && { baseURL: modelBaseURL }),
-      }
+          apiKey: modelApiKey,
+          modelName: modelName,
+          ...(modelBaseURL && { baseURL: modelBaseURL }),
+          // Add compatibility options for custom endpoints
+          compatibility: "strict" as const,
+        }
       : modelName;
 
     // Check if CDP endpoint is provided (connect to existing Chrome)
+    // Note: Connecting to existing browsers via CDP has limitations with Stagehand.
+    // For reliable operation, it's recommended to let Stagehand launch its own browser.
     const cdpEndpoint = config.cdpEndpoint;
 
     const launchOptions: {
@@ -59,6 +62,10 @@ export const createStagehandInstance = async (
 
     if (cdpEndpoint) {
       // CDP mode - connect to existing Chrome browser
+      // WARNING: This may fail if the browser doesn't expose pages correctly via CDP
+      process.stderr.write(
+        `[SessionManager] WARNING: Connecting to existing browser via CDP may have issues. Consider letting Stagehand launch its own browser.\n`,
+      );
       process.stderr.write(`[SessionManager] Connecting to CDP endpoint: ${cdpEndpoint}\n`);
 
       // If CDP endpoint is an HTTP URL, resolve it to the WebSocket debugger URL
@@ -73,7 +80,7 @@ export const createStagehandInstance = async (
             if (data.webSocketDebuggerUrl) {
               cdpUrl = data.webSocketDebuggerUrl;
               process.stderr.write(
-                `[SessionManager] Resolved WebSocket URL: ${cdpUrl}\n`,
+                `[SessionManager] Resolved browser WebSocket URL: ${cdpUrl}\n`,
               );
             } else {
               throw new Error(
@@ -87,10 +94,39 @@ export const createStagehandInstance = async (
           }
         } catch (error) {
           process.stderr.write(
-            `[SessionManager] WARN - Failed to resolve WebSocket URL: ${error instanceof Error ? error.message : String(error)}. Using provided URL as-is.\n`,
+            `[SessionManager] WARN - Failed to resolve WebSocket URL: ${error instanceof Error ? error.message : String(error)}\n`,
           );
           // Fall back to converting http to ws protocol
           cdpUrl = cdpEndpoint.replace(/^https?:/, "ws:");
+        }
+      }
+      // Case 2: WebSocket page URL - convert to browser URL
+      else if (cdpEndpoint.startsWith("ws://") || cdpEndpoint.startsWith("wss://")) {
+        if (cdpEndpoint.includes("/devtools/page/")) {
+          // Extract host and fetch browser ID from /json/version
+          try {
+            const url = new URL(cdpEndpoint);
+            const httpProtocol = url.protocol === "wss:" ? "https:" : "http:";
+            const versionUrl = `${httpProtocol}//${url.host}/json/version`;
+            const response = await fetch(versionUrl);
+            if (response.ok) {
+              const data = await response.json();
+              if (data.webSocketDebuggerUrl) {
+                cdpUrl = data.webSocketDebuggerUrl;
+                process.stderr.write(
+                  `[SessionManager] Converted page URL to browser URL: ${cdpUrl}\n`,
+                );
+              } else {
+                process.stderr.write(
+                  `[SessionManager] WARN - No webSocketDebuggerUrl in /json/version, using page URL as-is\n`,
+                );
+              }
+            }
+          } catch (error) {
+            process.stderr.write(
+              `[SessionManager] WARN - Failed to convert page URL to browser URL: ${error instanceof Error ? error.message : String(error)}\n`,
+            );
+          }
         }
       }
       launchOptions.cdpUrl = cdpUrl;

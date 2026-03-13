@@ -38,15 +38,25 @@ export const createStagehandInstance = async (
     // LOCAL mode - run browser locally
     process.stderr.write(`[SessionManager] Creating LOCAL Stagehand instance for session ${sessionId}\n`);
 
+    let effectiveModelName = modelName;
+    if (effectiveModelName.startsWith("openai/")) {
+      effectiveModelName = effectiveModelName.replace("openai/", "");
+    }
+
     const modelConfig = modelApiKey
       ? {
           apiKey: modelApiKey,
-          modelName: modelName,
+          modelName: effectiveModelName,
           ...(modelBaseURL && { baseURL: modelBaseURL }),
           // Add compatibility options for custom endpoints
-          compatibility: "strict" as const,
+          // 'compatible' is some providers require this, though legacy OpenAIClient may handle it differently
+          compatibility: "compatible" as const,
         }
-      : modelName;
+      : effectiveModelName;
+
+    if (modelBaseURL) {
+      process.stderr.write(`[SessionManager] Using custom model endpoint: ${modelBaseURL} with model: ${effectiveModelName} (compatibility: compatible)\n`);
+    }
 
     // Check if CDP endpoint is provided (connect to existing Chrome)
     // Note: Connecting to existing browsers via CDP has limitations with Stagehand.
@@ -152,13 +162,20 @@ export const createStagehandInstance = async (
     });
   } else {
     // BROWSERBASE mode - use cloud browser
+    let effectiveModelName = modelName;
+    if (effectiveModelName.startsWith("openai/")) {
+      effectiveModelName = effectiveModelName.replace("openai/", "");
+    }
+
     const modelConfig = modelApiKey
       ? {
-        apiKey: modelApiKey,
-        modelName: modelName,
-        ...(modelBaseURL && { baseURL: modelBaseURL }),
-      }
-      : modelName;
+          apiKey: modelApiKey,
+          modelName: effectiveModelName,
+          ...(modelBaseURL && { baseURL: modelBaseURL }),
+          // Add compatibility options for custom endpoints
+          compatibility: "compatible" as const,
+        }
+      : effectiveModelName;
 
     stagehand = new Stagehand({
       env: "BROWSERBASE",

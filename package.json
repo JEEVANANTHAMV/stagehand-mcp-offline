@@ -1,6 +1,6 @@
 {
   "name": "innosynth-mcp",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "MCP server for AI browser automation using Stagehand - supports LOCAL mode without Browserbase cloud. Fork with custom OpenAI endpoint support.",
   "keywords": [
     "mcp",
@@ -45,7 +45,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "clean": "rm -rf dist",
-    "prepublishOnly": "pnpm clean && pnpm build",
+    "prepublishOnly": "npm run clean && npm run build",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
     "postinstall": "patch-package"

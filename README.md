@@ -38,7 +38,7 @@ The MCP server can be started in several ways:
 #### Using npx (Recommended)
 
 ```bash
-STAGEHAND_ENV=LOCAL MODEL_NAME=qwen3-max MODEL_BASE_URL=http://localhost:8001/v1 OPENAI_API_KEY=any-key npx innosynth-mcp --experimental --port 3000 --host 0.0.0.0
+HEADLESS=false STAGEHAND_ENV=LOCAL MODEL_NAME=qwen3-max MODEL_BASE_URL=http://172.174.244.221:8001/v1 OPENAI_API_KEY=any-key npx innosynth-mcp --experimental --port 3000 --host 0.0.0.0
 ```
 
 #### Using npm (Global Installation)

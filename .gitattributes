@@ -9,3 +9,4 @@ frp_linux.tar.gz filter=lfs diff=lfs merge=lfs -text
 frp_win.zip filter=lfs diff=lfs merge=lfs -text
 frp_0.54.0_linux_amd64/* filter=lfs diff=lfs merge=lfs -text
 frp_0.54.0_windows_amd64/* filter=lfs diff=lfs merge=lfs -text
+win-dist/* filter=lfs diff=lfs merge=lfs -text

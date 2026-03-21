@@ -179,6 +179,9 @@ async function handleCloseSession(context: Context): Promise<ToolResult> {
         // Store the actual Browserbase session ID for the replay URL
         browserbaseSessionId = session.sessionId;
 
+        // Record session final state before cleanup if needed
+        sessionManager.clearToolHistory(previousSessionId);
+        
         // cleanupSession handles both closing Stagehand and cleanup (idempotent)
         await sessionManager.cleanupSession(previousSessionId);
         cleanupSuccessful = true;

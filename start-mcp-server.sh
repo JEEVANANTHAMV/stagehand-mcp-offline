@@ -32,7 +32,7 @@ cd /home/desktopuser/Downloads/stagehand-mcp-offline
 STAGEHAND_ENV=LOCAL \
 HEADLESS=false \
 MODEL_NAME=openai/qwen3-max \
-MODEL_BASE_URL=http://localhost:8001/v1 \
+MODEL_BASE_URL=http://172.174.244.221:8001/v1 \
 OPENAI_API_KEY=any-key \
 node dist/program.js --experimental --port 3000 --host 0.0.0.0 &
 

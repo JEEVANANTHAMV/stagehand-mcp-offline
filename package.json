@@ -48,7 +48,9 @@
     "prepublishOnly": "npm run clean && npm run build",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "build:mcp": "node scripts/bundle-mcp.js",
+    "build:mcp:win": "bash scripts/build-win-mcp.sh"
   },
   "dependencies": {
     "@browserbasehq/sdk": "^2.6.0",
@@ -63,6 +65,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "esbuild": "^0.27.4",
     "eslint": "^9.29.0",
     "prettier": "^3.6.1",
     "tslib": "^2.8.1",

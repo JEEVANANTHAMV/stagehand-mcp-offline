@@ -1,0 +1,6 @@
+{
+  "name": "innosynth-mcp",
+  "version": "1.0.6",
+  "type": "commonjs",
+  "main": "index.cjs"
+}

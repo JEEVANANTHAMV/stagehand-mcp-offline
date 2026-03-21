@@ -230,7 +230,7 @@ export const createStagehandInstance = async (
  */
 
 export class SessionManager {
-  private browsers: Map<string, BrowserSession>;
+  public browsers: Map<string, BrowserSession>;
   private defaultBrowserSession: BrowserSession | null;
   private readonly defaultSessionId: string;
   private activeSessionId: string;
@@ -348,6 +348,7 @@ export class SessionManager {
         page,
         sessionId: browserbaseSessionId,
         stagehand,
+        toolHistory: [],
       };
 
       this.browsers.set(newSessionId, sessionObj);
@@ -606,6 +607,38 @@ export class SessionManager {
         `[SessionManager] Cleaned up active session ${sessionId}, resetting to default.\n`,
       );
       this.setActiveSessionId(this.defaultSessionId);
+    }
+  }
+
+  // Record a tool result to the session history
+  public addToolResult(sessionId: string, tool: string, input: any, result: string): void {
+    const session = this.browsers.get(sessionId);
+    if (session) {
+      if (!session.toolHistory) {
+        session.toolHistory = [];
+      }
+      session.toolHistory.push({ tool, input, result });
+    }
+  }
+
+  // Get current tool history for a session
+  public getToolHistory(sessionId: string): Array<{ tool: string; input: any; result: string }> {
+    const session = this.browsers.get(sessionId);
+    return session?.toolHistory || [];
+  }
+
+  // Clear tool history for a session
+  public clearToolHistory(sessionId: string): void {
+    const session = this.browsers.get(sessionId);
+    if (session) {
+      session.toolHistory = [];
+      session.sessionSummary = undefined;
+      
+      // Also clear internal Stagehand history if applicable
+      const internalStagehand = (session.stagehand as any);
+      if (internalStagehand && Array.isArray(internalStagehand._history)) {
+        internalStagehand._history = [];
+      }
     }
   }
 

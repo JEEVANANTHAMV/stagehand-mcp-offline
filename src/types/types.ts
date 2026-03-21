@@ -25,6 +25,8 @@ export type BrowserSession = {
   page: Page;
   sessionId: string;
   stagehand: Stagehand;
+  toolHistory: Array<{ tool: string; input: any; result: string }>;
+  sessionSummary?: string;
 };
 
 export type ToolActionResult =

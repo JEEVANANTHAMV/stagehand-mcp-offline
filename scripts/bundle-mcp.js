@@ -14,18 +14,33 @@ async function bundle() {
             target: 'node18',
             outfile: 'dist-bundle/index.cjs',
             format: 'cjs',
-            sourcemap: true,
+            sourcemap: false,
+            minify: false,
+            alias: {
+                'sharp': './scripts/sharp-stub.cjs'
+            },
             external: [
                 ...builtinModules,
                 ...builtinModules.map(m => `node:${m}`),
-                'fsevents', // problematic on windows/linux crossing
-                'sharp'     // binary dependency
+                'fsevents'
             ],
-            loader: {
-                '.node': 'copy',
+            banner: {
+                js: `
+// ESM Polyfills for CJS bundle
+const { fileURLToPath } = require('url');
+const { dirname } = require('path');
+if (typeof __filename === 'undefined') {
+    globalThis.__filename = '/snapshot/innosynth-mcp/index.cjs';
+    globalThis.__dirname = '/snapshot/innosynth-mcp';
+}
+if (typeof import.meta === 'undefined') {
+    globalThis.import = { meta: { url: 'file:///snapshot/innosynth-mcp/index.cjs' } };
+}
+`
             },
             define: {
-                'process.env.NODE_ENV': '"production"'
+                'process.env.NODE_ENV': '"production"',
+                'import.meta.url': '"file:///snapshot/innosynth-mcp/index.cjs"'
             }
         });
         
@@ -35,7 +50,8 @@ async function bundle() {
             name: pkg.name,
             version: pkg.version,
             type: 'commonjs',
-            main: 'index.cjs'
+            main: 'index.cjs',
+            bin: 'index.cjs'
         }, null, 2));
 
         console.log('Successfully bundled to dist-bundle/index.cjs');

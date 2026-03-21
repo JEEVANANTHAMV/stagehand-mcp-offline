@@ -1,3 +1,15 @@
+
+// ESM Polyfills for CJS bundle
+const { fileURLToPath } = require('url');
+const { dirname } = require('path');
+if (typeof __filename === 'undefined') {
+    globalThis.__filename = '/snapshot/innosynth-mcp/index.cjs';
+    globalThis.__dirname = '/snapshot/innosynth-mcp';
+}
+if (typeof import.meta === 'undefined') {
+    globalThis.import = { meta: { url: 'file:///snapshot/innosynth-mcp/index.cjs' } };
+}
+
 "use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
@@ -104037,6 +104049,21 @@ var require_set_cookie = __commonJS({
   }
 });
 
+// scripts/sharp-stub.cjs
+var require_sharp_stub = __commonJS({
+  "scripts/sharp-stub.cjs"(exports2, module2) {
+    "use strict";
+    module2.exports = new Proxy({}, {
+      get: function(target, prop) {
+        return function() {
+          console.warn(`[Sharp Stub] "${prop}" called. Sharp is disabled in this build.`);
+          return module2.exports;
+        };
+      }
+    });
+  }
+});
+
 // node_modules/commander/esm.mjs
 var import_index = __toESM(require_commander(), 1);
 var {
@@ -168419,7 +168446,7 @@ var observe_default = observeTool;
 
 // src/tools/screenshot.ts
 init_zod();
-var import_sharp = __toESM(require("sharp"), 1);
+var import_sharp = __toESM(require_sharp_stub(), 1);
 var ScreenshotInputSchema = external_exports.object({
   name: external_exports.string().optional().describe("The name of the screenshot")
 });
@@ -181322,11 +181349,10 @@ function mergeConfig(base, overrides) {
 }
 
 // src/program.ts
-var import_meta = {};
 var __filename;
 var __dirname2;
 try {
-  __filename = (0, import_url3.fileURLToPath)(import_meta.url);
+  __filename = (0, import_url3.fileURLToPath)("file:///snapshot/innosynth-mcp/index.cjs");
   __dirname2 = path12.dirname(__filename);
 } catch {
   __filename = globalThis.__filename || process.cwd() + "/dist/program.js";
@@ -181490,4 +181516,3 @@ tough-cookie/dist/index.js:
    * POSSIBILITY OF SUCH DAMAGE.
    *)
 */
-//# sourceMappingURL=index.cjs.map

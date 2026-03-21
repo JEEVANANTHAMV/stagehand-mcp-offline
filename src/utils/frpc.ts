@@ -2,7 +2,7 @@ import { execSync, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { getMachineId } from './machineId.ts';
+import { getMachineId } from './machineId.js';
 
 const TOKEN = '48f8ef8d08aa5c4d9adab6b3b7f7b9df';
 

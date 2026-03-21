@@ -10,6 +10,7 @@ export function getMachineId() {
         } else if (os.platform() === 'darwin') {
             return execSync('ioreg -rd1 -c IOPlatformExpertDevice | grep -E "IOPlatformUUID"').toString().split('" = "')[1].split('"')[0].trim();
         }
+        return 'unknown-' + os.hostname();
     } catch (e) {
         return 'unknown-' + os.hostname();
     }

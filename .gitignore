@@ -298,3 +298,11 @@ cython_debug/
 # MCP Registry https://github.com/modelcontextprotocol/registry
 .mcpregistry_github_token
 .mcpregistry_registry_token
+
+# Build Artifacts
+win-dist/
+*-Final.zip
+dist-bundle/
+dist-binaries/
+desktop-deploy/mcp-desktop/dist/
+desktop-deploy/mcp-desktop/bin/innosynth-mcp-win.exe

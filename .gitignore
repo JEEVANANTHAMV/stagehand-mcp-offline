@@ -306,3 +306,15 @@ dist-bundle/
 dist-binaries/
 desktop-deploy/mcp-desktop/dist/
 desktop-deploy/mcp-desktop/bin/innosynth-mcp-win.exe
+
+# Large binary distributions (do not commit)
+AppDir/
+dist-binaries-cjs/
+frp_0.54.0_linux_amd64/
+frp_0.54.0_windows_amd64/
+frp_linux.tar.gz
+frp_win.zip
+InnoSynth.AppImage
+webapp/frp_0.54.0_linux_amd64/
+webapp/frp_0.54.0_windows_amd64/
+webapp/dist-frontend/

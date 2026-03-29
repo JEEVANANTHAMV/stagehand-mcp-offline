@@ -1,0 +1,84 @@
+{
+  "name": "innosynth-mcp",
+  "version": "1.0.6",
+  "description": "MCP server for AI browser automation using Stagehand - supports LOCAL mode without Browserbase cloud. Fork with custom OpenAI endpoint support.",
+  "keywords": [
+    "mcp",
+    "stagehand",
+    "browser-automation",
+    "ai",
+    "headless-chrome",
+    "playwright",
+    "claude",
+    "openai",
+    "local",
+    "innosynth"
+  ],
+  "license": "Apache-2.0",
+  "author": "innosynth",
+  "homepage": "https://github.com/innosynth/innosynth-mcp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/innosynth/innosynth-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/innosynth/innosynth-mcp/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "bin": {
+    "innosynth-mcp": "./cli.js"
+  },
+  "files": [
+    "dist",
+    "cli.js",
+    "index.js",
+    "index.d.ts",
+    "config.d.ts",
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "patches"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write .",
+    "postinstall": "patch-package",
+    "build:mcp": "node scripts/bundle-mcp.js",
+    "build:mcp:win": "bash scripts/build-win-mcp.sh"
+  },
+  "dependencies": {
+    "@browserbasehq/sdk": "^2.6.0",
+    "@browserbasehq/stagehand": "^3.0.3",
+    "@mcp-ui/server": "^5.10.0",
+    "@modelcontextprotocol/sdk": "^1.13.1",
+    "commander": "^14.0.0",
+    "dotenv": "^16.4.6",
+    "patch-package": "^8.0.1",
+    "sharp": "^0.32.6",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "esbuild": "^0.27.4",
+    "eslint": "^9.29.0",
+    "nexe": "^5.0.0-beta.4",
+    "prettier": "^3.6.1",
+    "tslib": "^2.8.1",
+    "typescript": "^5.6.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "tslib": "^2.8.1"
+  }
+}
